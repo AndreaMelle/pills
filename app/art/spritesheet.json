@@ -1,0 +1,85 @@
+{
+	"sheetFile" : "art/spritesheet.png",
+	
+	"sheetScale" : 4,
+	
+	"sprites" : [
+
+		{
+			"id" : 0,
+			"name" : "ship",
+			"frames" : [
+				{
+					"id" : 0,
+					"name" : "thrustOff",	
+					"crop" : { "x" : 657, "y" : 319, "w" : 211, "h" : 211 },
+					"proxy" : { "type" : "circle", "x" : 658, "y" : 318, "w" : 200, "h" : 200 },
+					"anchor" : {"x" : 105, "y" : 105}
+				},
+				{
+					"id" : 1,
+					"name" : "thrustOn",
+					"crop" : { "x" : 657, "y" : 351, "w" : 211, "h" : 275 },
+					"proxy" : { "type" : "circle", "x" : 658, "y" : 318, "w" : 200, "h" : 200 },
+					"anchor" : {"x" : 105, "y" : 105}
+				}
+			]
+		},
+		
+		{
+			"id" : 1,
+			"name" : "saucer",
+			"frames" : [
+				{
+					"id" : 0,
+					"name" : "saucer",	
+					"crop" : { "x" : 300, "y" : 700, "w" : 292, "h" : 142 },
+					"proxy" : { "type" : "box", "x" : 300, "y" : 700, "w" : 280, "h" : 130 },
+					"anchor" : {"x" : 146, "y" : 71}
+				}
+			]
+		},
+		
+		{
+			"id" : 2,
+			"name" : "largeRock",
+			"frames" : [
+				{
+					"id" : 0,
+					"name" : "largeRock",
+					"crop" : { "x" : 270, "y" : 270, "w" : 516, "h" : 516 },
+					"proxy" : { "type" : "circle", "x" : 270, "y" : 270, "w" : 500, "h" : 500 },
+					"anchor" : {"x" : 258, "y" : 258}
+				}
+			]
+		},
+		
+		{
+			"id" : 3,
+			"name" : "mediumRock",
+			"frames" : [
+				{
+					"id" : 0,
+					"name" : "mediumRock",
+					"crop" : { "x" : 660, "y" : 660, "w" : 261, "h" : 261 },
+					"proxy" : { "type" : "circle", "x" : 660, "y" : 660, "w" : 250, "h" : 250 },
+					"anchor" : {"x" : 130, "y" : 130}
+				}
+			]
+		},
+		
+		{
+			"id" : 4,
+			"name" : "smallRock",
+			"frames" : [
+				{
+					"id" : 0,
+					"name" : "smallRock",
+					"crop" : { "x" : 642, "y" : 111, "w" : 136, "h" : 136 },
+					"proxy" : { "type" : "circle", "x" : 642, "y" : 111, "w" : 125, "h" : 125 },
+					"anchor" : {"x" : 68, "y" : 68}
+				}
+			]
+		}
+	]
+}

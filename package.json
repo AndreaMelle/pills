@@ -1,0 +1,33 @@
+{
+  "name": "ships",
+  "version": "0.0.0",
+  "description": "A simple HTML5 Canvas game",
+  "main": "web.js",
+  "scripts": {
+    "test": "echo \\\"Error: no test specified\\\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AndreaMelle/ships.git"
+  },
+  "keywords": [
+    "ships",
+    "game",
+    "oop",
+    "canvas"
+  ],
+  "author": "andrea melle",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/AndreaMelle/ships/issues"
+  },
+  "homepage": "https://github.com/AndreaMelle/ships",
+  "dependencies": {
+    "logfmt": "~0.18.1",
+    "express": "~3.4.7"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  }
+}
