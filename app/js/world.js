@@ -1,33 +1,219 @@
-/* World 
- * The world is a container which creates and keep all entities.
- * The world ~corresponds to a level in a game
- * It is recycled, reset and re-initialized at the beginning of each level
- * Here it is modeled as a singleton, but multiple words could be allowed
- * @TODO: is this a manager, a system or simply something unique?
- */
+var DEBUG = false;
 
- var World = (function () {
- 	
- 	var that = {};
+var World = (function () {
 
- 	var entities = new Array();
+	var my = {};
+	var Coll = {};
+	
+	var worldBox;
+	var donuts = new Array();
+	var pills = new Array();	
+	var physics;
+	var newPills;
 
- 	// @TODO: how to cache entities and components?
+	var colors = [];
+	colors.push("#FF0000");
+	colors.push("#00FF00");
+	var next = 0;
+	var radius = 20;
 
- 	var ship = Object.create(ShipEntity());
- 	entities.push(entities);
+	var spanPills = function (num) {
+		for(var i = 0; i < num; i++) {
+			var px = (Math.random() * worldBox.width) + worldBox.x;
+			var py = (Math.random() * worldBox.height) + worldBox.y;
+			pills.push(new Pill({
+				x : px,
+				y : py,
+				color: "#FF00FF",
+				stamina : 1
+			}));
+		}
+	};
 
- 	//ship.name
- 	//ship.eid
+	
+	my.init = function () {
+		worldBox = new Rect(
+			GC.left() + 10,
+			GC.top() + 10,
+			GC.width() - 20,
+			GC.height() - 20
+		);
+		physics = new VerletPhysics2D();
+		physics.setDrag(0.01);
+		physics.setWorldBounds(worldBox);
 
- 	// @TODO: go through all rock entities and make them explode if they're dead
+		
+		for(var i = 0; i < worldBox.width; i++) {
+			World.P().addBehavior(
+				new AttractionBehavior(new Vec2D(i * radius, worldBox.y), radius, -1.2));
+			World.P().addBehavior(
+				new AttractionBehavior(new Vec2D(i * radius, worldBox.y + worldBox.height), radius, -1.2));
+		}
 
- 	// @TODO: go through all rock entities and make them split if they're dead
+		for(var i = 0; i < worldBox.height; i++) {
+			World.P().addBehavior(
+				new AttractionBehavior(new Vec2D(worldBox.x, i * radius), radius, -1.2));
+			World.P().addBehavior(
+				new AttractionBehavior(new Vec2D(worldBox.x + worldBox.width, i * radius), radius, -1.2));
+		}
 
- 	// @TODO: go through all rock entities and remove them if they are dead
+		newPills = 5;
+		spanPills(newPills);
 
- 	//  @TODO: update all systems
+	};
+	
+	my.update = function () {
+		
+		physics.update();
 
- 	return that;
+		Coll.checkCollisions();
 
- }());
+		for (var d in donuts) {
+			donuts[d].update();
+		}
+
+		for (var p in pills) {
+			pills[p].update();
+		}
+
+	};
+
+	var drawPhysicsDebug = function (ctx) {
+
+		ctx.strokeStyle = "#0000FF";
+		ctx.strokeRect(worldBox.x,worldBox.y,worldBox.width,worldBox.height);
+
+
+		for(var i = 0; i < worldBox.width; i++) {
+
+			ctx.beginPath();
+			ctx.arc(i * radius, worldBox.y, radius, 0, 2 * Math.PI);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(i * radius, worldBox.y + worldBox.height, radius, 0, 2 * Math.PI);
+			ctx.stroke();
+		}
+
+		for(var i = 0; i < worldBox.height; i++) {
+
+			ctx.beginPath();
+			ctx.arc(worldBox.x, i * radius, radius, 0, 2 * Math.PI);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(worldBox.x + worldBox.width, i * radius, radius, 0, 2 * Math.PI);
+			ctx.stroke();
+			
+		}
+	};
+	
+	my.draw = function () {
+		var ctx = GC.get();
+		ctx.clearRect(0,0,GC.width(),GC.height());
+		ctx.strokeStyle = "#000000";
+		ctx.strokeRect(0,0,GC.width(),GC.height());
+
+		for (var d in donuts) {
+			donuts[d].draw();
+		}
+
+		for (var p in pills) {
+			pills[p].draw();
+		}
+		if (DEBUG) {
+			drawPhysicsDebug(ctx);
+		}
+	};
+
+	my.createPlayer = function (controller) {
+		var d = new Donut({
+			x : worldBox.width / 2.0,
+			y : worldBox.height / 2.0,
+			color : colors[next % colors.length]
+		});
+		next+=1;
+		controller.bind(d);
+		donuts.push(d);
+	};
+
+	my.destroyPlayer = function (player) {
+		var idx = donuts.indexOf(player);
+		if(idx > -1) {
+			var d = donuts.splice(idx,1)[0];
+			d.controller.unbind(d);
+			d = null;
+		}
+	};
+
+	my.P = function () {
+		return physics;
+	};
+
+	my.getWorldBox = function () {
+		return worldBox;
+	};
+
+	Coll.ccd = function (d, p) {
+		// @TODO: this is not conisdering that the donut is also moving high speed, but it's a start
+		var m = Math.orthoLine(p.x(), p.y(), p.fx(), p.fy());
+		var i = d.y();
+		if(m) {
+			i -= m * d.x();
+		}
+
+		var intersect = Math.intersectLines(
+			p.x(), p.y(), p.fx(), p.fy(),
+			d.x(), d.y(), 0, i);
+
+		if(!intersect) {
+			return false;
+		}
+
+		var distsq = (d.x() - intersect.x)*(d.x() - intersect.x) + (d.y() - intersect.y)*(d.y() - intersect.y);
+
+		if (distsq <= d.r()) {
+			return true;
+		}
+
+		return false;
+
+	};
+
+	Coll.handleCollision = function (d, p, j) {
+		d.addStamina(p.getStamina());
+		pills.splice(j,1)[0].dispose();
+		console.log("stamina: " + d.getStamina());
+		newPills++;
+	};
+
+	Coll.checkCollisions = function () {
+
+		// @TODO: need to implement coarse grid-based optimization
+		// @TODO: it might be actually cool without CCD
+
+		var l_donuts = donuts.length;
+		var l_pills = pills.length;
+		newPills = 0;
+
+		for(var i = l_donuts-1; i >= 0; i--) {
+			for (var j = l_pills-1; j >= 0; j--) {
+				var d = donuts[i];
+				var p = pills[j];
+
+				var distsq = (d.x() - p.x())*(d.x() - p.x()) + (d.y() - p.y())*(d.y() - p.y());
+				var sumr = (d.r() + p.r()) * (d.r() + p.r());
+
+				if ( distsq <= sumr ) {//|| Coll.ccd(d,p) ) {
+					Coll.handleCollision(d, p, j);
+				}
+			}
+		}
+
+		spanPills(newPills);
+
+	};
+	
+	return my;
+
+} ());

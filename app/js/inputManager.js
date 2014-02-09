@@ -1,56 +1,56 @@
-/*
-InputManager.method('update', function () {
-	var l = this.keyEvents.length - 1;
-	
-	for (var i = l; i >= 0; i--) {
-		var keyEvent = this.keyEvents.splice(i,1)[0];
-		this.fire('key',{ keyCode : keyEvent.keyCode, pressed : keyEvent.pressed });
-	}
-});
-*/
+var WebSocketManager = (function () {
 
-var InputManager = (function () {
+	var that = {};
+
+	return that;
+
+}());
+
+var KeyboardManager = (function () {
 	
-	var my = {};
-	//makePublisher(my);
+	var that = {};
+
+	var k1 = KeyboardController({
+		PLAYER : 49,
+		UP : 87,
+		CCW : 65,
+		CW : 68,
+		ACTION : 83
+	});
+
+	var k2 = KeyboardController({
+		PLAYER : 50,
+		UP : 38,
+		CCW : 37,
+		CW : 39,
+		ACTION : 40
+	});
 	
-	var pressedKeys = [];
-	
-	my.keymap =  {
-		p1 : {
-			UP : 38,
-			CCW : 37,
-			CW : 39,
-			ACTION : 32
-		}
-	};
-	
-	pressedKeys[my.keymap.p1.UP] = false;
-	pressedKeys[my.keymap.p1.CCW] = false;
-	pressedKeys[my.keymap.p1.CW] = false;
-	pressedKeys[my.keymap.p1.ACTION] = false;
-	
-	my.init = function () {
+	that.init = function () {
+		var t = that;
 		document.onkeydown = function (e) {
 			e = e ? e : window.event;
-			pressedKeys[e.keyCode] = true;
+			k1.onDown(e.keyCode);
+			k2.onDown(e.keyCode);
 		};
 		
 		document.onkeyup = function (e) {
 			e = e ? e : window.event;
-			pressedKeys[e.keyCode] = false;
+			k1.onUp(e.keyCode);
+			k2.onUp(e.keyCode);
 		};
+
+		Controllers.add(k1);
+		Controllers.add(k2);
+
 	};
 	
-	my.getKeys = function () {
-		return pressedKeys;
-	};
-	
-	my.dispose = function () {
+	that.dispose = function () {
+		Controllers.remove(k1);
+		Controllers.remove(k2);
 		document.onkeydown = null;
 		document.onkeyup = null;
 	};
 	
-	return my;
+	return that;
 }());
-		
