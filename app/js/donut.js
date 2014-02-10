@@ -3,6 +3,8 @@ var Donut = function(spec) {
 
 	var px;
 	var py;
+	var dx;
+	var dy;
 	var rotation;
 	var thrust;
 	var stamina;
@@ -10,26 +12,28 @@ var Donut = function(spec) {
 	var repulsion;
 	var attraction;
 	var constForce;
-	var color;
+	var asset;
+	var score = 0;
 
-	var repulsionRadius = 50;
+	var radius = 27;
+	var repulsionRadius = radius * 3;
 	var repulsionStrength = 1.0;
-	var attractionRadius = 40;
+	var attractionRadius = radius * 2;
 	var attractionStrength = 0.5;
-	var width = 20;
-	var height = 20;
 	var maxThrust = 0.03;
 	var maxVelocity = 5; // not sure how to apply this in the physics lib
 	var rotVelocity = 2 * Math.PI / 180;
+	var bulletReady = 1;
 
-	that.respawn = function(px, py, c) {
+	that.respawn = function(_px, _py) {
 
-		px = px || 0;
-		py = py || 0;
-		rotation = 0;
+		px = _px || 0;
+		py = _py || 0;
+		rotation = -Math.PI / 2;
+		dx = Math.cos(rotation);
+		dy = Math.sin(rotation);
 		thrust = 0;
-		stamina = 0;
-		color = c || "#000000";
+		stamina = 1;//0;
 
 		if (repulsion) {
 			World.P().removeBehavior(repulsion);
@@ -63,17 +67,19 @@ var Donut = function(spec) {
 	};
 
 	that.respawn(spec.x, spec.y, spec.color);
+	asset = Assets.donut({ color : spec.color, radius : radius });
 
 	that.update = function() {
+		
+		dx = Math.cos(rotation);
+		dy = Math.sin(rotation);
 
 		if (thrust === 0) {
 			//particle.clearFoce();
 			constForce.setForce(new Vec2D(0,0));
 
 		} else {
-			var fx = thrust * Math.cos(rotation);
-			var fy = thrust * Math.sin(rotation);
-			constForce.setForce(new Vec2D(fx, fy));
+			constForce.setForce(new Vec2D(thrust * dx, thrust * dy));
 		}
 
 		px = particle.x;
@@ -90,24 +96,14 @@ var Donut = function(spec) {
 	};
 
 	that.draw = function() {
-
-		var r = width / 2.0;
 		var ctx = GC.get();
 
-		ctx.strokeStyle = color;
-		ctx.lineWidth = 1;
-		ctx.beginPath();
-		ctx.arc(px, py, r, 0, 2 * Math.PI);
-		ctx.stroke();
+		var text = stamina;
+		if (stamina >= bulletReady) {
+			text = "b"
+		}
 
-		var dx = r * Math.cos(rotation);
-		var dy = r * Math.sin(rotation);
-
-		ctx.beginPath();
-		ctx.moveTo(px, py);
-		ctx.lineTo(px + dx, py + dy);
-		ctx.stroke();
-		ctx.closePath();
+		asset.draw(ctx, px, py, dx, dy, rotation, text);
 
 		if (DEBUG) {
 			drawPhysicsDebug(ctx);
@@ -131,6 +127,23 @@ var Donut = function(spec) {
 		rotation += rotVelocity;
 	};
 
+	that.fire = function () {
+
+		if(stamina >= bulletReady) {
+
+			World.fireBullet(Bullet({
+				'x' : px,
+				'y' : py,
+				'dx' : dx,
+				'dy' : dy,
+				'owner' : that,
+				'color' : asset.color()
+			}));
+
+			stamina = 0;
+		}
+	};
+
 	that.addStamina = function (value) {
 		stamina += value;
 	};
@@ -145,6 +158,14 @@ var Donut = function(spec) {
 
 	that.getStamina = function () {
 		return stamina;
+	};
+
+	that.addScore = function (value) {
+		score += value;
+	};
+
+	that.getScore = function () {
+		return score;
 	};
 
 	that.x = function () {
@@ -164,7 +185,7 @@ var Donut = function(spec) {
 	};
 
 	that.r = function () {
-		return width / 2.0;
+		return radius;
 	};
 
 	return that;

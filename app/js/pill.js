@@ -5,18 +5,13 @@ var Pill = function(spec) {
 	var py;
 	var stamina;
 	var particle;
-	var color;
+	var radius = 8;
 
-	var width = 5;
-	var height = 5;
+	that.respawn = function(_px, _py, s) {
 
-	that.respawn = function(px, py, c, s) {
-
-		px = px || 0;
-		py = py || 0;
-		thrust = 0;
+		px = _px || 0;
+		py = _py || 0;
 		stamina = s || 0;
-		color = c || "#000000";
 
 		if (particle) {
 			World.P().removeParticle(particle);
@@ -34,7 +29,7 @@ var Pill = function(spec) {
 		}
 	};
 
-	that.respawn(spec.x, spec.y, spec.color, spec.stamina);
+	that.respawn(spec.x, spec.y, spec.stamina);
 
 	that.update = function() {
 		px = particle.x;
@@ -42,15 +37,8 @@ var Pill = function(spec) {
 	};
 
 	that.draw = function() {
-
-		var r = width / 2.0;
 		var ctx = GC.get();
-
-		ctx.strokeStyle=color;
-		ctx.lineWidth=1;
-		ctx.beginPath();
-		ctx.arc(px, py, r, 0, 2 * Math.PI);
-		ctx.stroke();
+		Assets.pill.draw(ctx, px, py);
 	};
 
 	that.getStamina = function () {
@@ -74,7 +62,7 @@ var Pill = function(spec) {
 	};
 
 	that.r = function () {
-		return width / 2.0;
+		return radius;
 	};
 
 	return that;

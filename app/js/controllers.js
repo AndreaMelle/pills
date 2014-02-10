@@ -17,7 +17,7 @@ var Controllers = (function () {
 	that.remove = function (c) {
 		var idx = controllers.indexOf(c);
 		if(idx > -1) {
-			donuts.splice(idx,1)[0];
+			controllers.splice(idx,1)[0];
 		}
 	};
 
@@ -32,6 +32,7 @@ var KeyboardController = function(spec) {
 	var keyMap = [];
 	var keySet = {};
 	var a = 0;
+	var name;
 
 	var initKey = function (k) {
 		keySet[k] = {};
@@ -47,6 +48,7 @@ var KeyboardController = function(spec) {
 	initKey('CCW');
 	initKey('CW');
 	initKey('ACTION');
+	name = spec.name || "";
 
 	that.bind = function (player) {
 		context = player;
@@ -54,6 +56,7 @@ var KeyboardController = function(spec) {
 		keySet['UP'].onReleased = player.thrustOff;
 		keySet['CCW'].onPressed = player.rotateCCW;
 		keySet['CW'].onPressed = player.rotateCW;
+		keySet['ACTION'].onPressed = player.fire;
 		player.controller = that;
 	};
 
@@ -63,6 +66,7 @@ var KeyboardController = function(spec) {
 		keySet['UP'].onReleased = null;
 		keySet['CCW'].onPressed = null;
 		keySet['CW'].onPressed = null;
+		keySet['ACTION'].onPressed = null;
 		player.controller = null;
 	};
 
@@ -105,6 +109,10 @@ var KeyboardController = function(spec) {
 
 		keySet[keyMap[e]].pressed = false;
 	}
+
+	that.getName = function () {
+		return name;
+	};
 
 	return that;
 };

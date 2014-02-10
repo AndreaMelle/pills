@@ -7,15 +7,16 @@ var World = (function () {
 	
 	var worldBox;
 	var donuts = new Array();
-	var pills = new Array();	
+	var pills = new Array();
+	var bullets = new Array();	
 	var physics;
 	var newPills;
 
 	var colors = [];
-	colors.push("#FF0000");
-	colors.push("#00FF00");
+	colors.push("#D3464E");
+	colors.push("#009245");
 	var next = 0;
-	var radius = 20;
+	var radius = 40;
 
 	var spanPills = function (num) {
 		for(var i = 0; i < num; i++) {
@@ -24,7 +25,6 @@ var World = (function () {
 			pills.push(new Pill({
 				x : px,
 				y : py,
-				color: "#FF00FF",
 				stamina : 1
 			}));
 		}
@@ -68,62 +68,41 @@ var World = (function () {
 
 		Coll.checkCollisions();
 
+		for (var b in bullets) {
+			bullets[b].update();
+		}
+
 		for (var d in donuts) {
 			donuts[d].update();
 		}
 
+		
 		for (var p in pills) {
 			pills[p].update();
 		}
 
 	};
 
-	var drawPhysicsDebug = function (ctx) {
-
-		ctx.strokeStyle = "#0000FF";
-		ctx.strokeRect(worldBox.x,worldBox.y,worldBox.width,worldBox.height);
-
-
-		for(var i = 0; i < worldBox.width; i++) {
-
-			ctx.beginPath();
-			ctx.arc(i * radius, worldBox.y, radius, 0, 2 * Math.PI);
-			ctx.stroke();
-
-			ctx.beginPath();
-			ctx.arc(i * radius, worldBox.y + worldBox.height, radius, 0, 2 * Math.PI);
-			ctx.stroke();
-		}
-
-		for(var i = 0; i < worldBox.height; i++) {
-
-			ctx.beginPath();
-			ctx.arc(worldBox.x, i * radius, radius, 0, 2 * Math.PI);
-			ctx.stroke();
-
-			ctx.beginPath();
-			ctx.arc(worldBox.x + worldBox.width, i * radius, radius, 0, 2 * Math.PI);
-			ctx.stroke();
-			
-		}
-	};
+	
 	
 	my.draw = function () {
 		var ctx = GC.get();
-		ctx.clearRect(0,0,GC.width(),GC.height());
-		ctx.strokeStyle = "#000000";
-		ctx.strokeRect(0,0,GC.width(),GC.height());
+
+		Assets.background.draw(ctx);
+
+		for (var p in pills) {
+			pills[p].draw();
+		}
+
+		for (var b in bullets) {
+			bullets[b].draw();
+		}
 
 		for (var d in donuts) {
 			donuts[d].draw();
 		}
 
-		for (var p in pills) {
-			pills[p].draw();
-		}
-		if (DEBUG) {
-			drawPhysicsDebug(ctx);
-		}
+		Assets.leaderboard.draw(ctx, donuts);
 	};
 
 	my.createPlayer = function (controller) {
@@ -144,6 +123,10 @@ var World = (function () {
 			d.controller.unbind(d);
 			d = null;
 		}
+	};
+
+	my.fireBullet = function (bullet) {
+		bullets.push(bullet);
 	};
 
 	my.P = function () {
@@ -180,32 +163,129 @@ var World = (function () {
 
 	};
 
-	Coll.handleCollision = function (d, p, j) {
-		d.addStamina(p.getStamina());
-		pills.splice(j,1)[0].dispose();
-		console.log("stamina: " + d.getStamina());
-		newPills++;
+	Coll.bulletCCD = function (d, b) {
+
+		// bbox for rought check
+		var box = {};
+		box.xmin = Math.min(d.x() - d.r(), d.fx() - d.r());
+		box.ymin = Math.min(d.y() - d.r(), d.fy() - d.r());
+		box.xmax = Math.max(d.x() + d.r(), d.fx() + d.r());
+		box.ymax = Math.max(d.y() + d.r(), d.fy() + d.r());
+
+		var p0 = {x : b.x(), y : b.y()};
+		var p1 = {x : b.fx(), y : b.fy()};
+		var same = false;
+
+		if(p0.x === p1.x && p0.y === p1.y) {
+			same = true;
+			return false;
+		}
+
+		if(same) {
+			result = Math.checkPointBoxIntersect(p0, box);
+		} else {
+			result = Math.checkLineBoxIntersect(p0, p1, box);
+		}
+
+		if (!result.accept) {
+			return false;
+		}
+
+		// rotated bbox
+		var rot = Math.getRotFromTwoPoints({x : d.x(), y : d.y()}, {x : d.fx(), y : d.fy()});
+		var c0 = Math.rotate(d.x(), d.y(), rot);
+		var c1 = Math.rotate(d.fx(), d.fy(), rot);
+			p0 = Math.rotate(b.x(), b.y(), rot);
+			p1 = Math.rotate(b.fx(), b.fy(), rot);
+
+		box.xmin = Math.min(c0.x - d.r(), c1.x - d.r());
+		box.ymin = Math.min(c0.y - d.r(), c1.y - d.r());
+		box.xmax = Math.max(c0.x + d.r(), c1.x + d.r());
+		box.ymax = Math.max(c0.y + d.r(), c1.y + d.r());
+
+		// intersect
+		if(same) {
+			result = Math.checkPointBoxIntersect(p0, box);
+		} else {
+			result = Math.checkLineBoxIntersect(p0, p1, box);
+		}
+
+		if (!result.accept) {
+			return false;
+		}
+
+		if( p0.x < c0.x && p1.x < c0.x ) {
+			if(!same) {
+				return Math.checkLineCircleIntersect(p0, p1, c0, d.r());
+			} else {
+				return Math.checkPointCircleIntersect(p0, c0, d.r());
+			}
+		} else if( p0.x > c1.x && p1.x > c1.x ) {
+			if(!same) {
+				return Math.checkLineCircleIntersect(p0, p1, c1, d.r());
+			} else {
+				return Math.checkPointCircleIntersect(p0, c1, d.r());	
+			}
+		} else {
+			return true;
+		}
+
+	};
+
+	Coll.checkBullets = function () {
+		var l_bullets = bullets.length - 1;
+		for (var i = l_bullets; i >= 0; i--) {
+
+			var b = bullets[i];
+
+			if( b.x() < worldBox.x ||
+				b.x() > worldBox.x + worldBox.width ||
+				b.y() < worldBox.y ||
+				b.y() > worldBox.y + worldBox.height ) {
+
+				bullets.splice(i,1)[0].dispose();
+			} else {
+
+				for (var j in donuts) {
+					var d = donuts[j];
+					if(b.owner() !== d) {
+						if( Coll.bulletCCD(d, b) ) {
+							b.owner().addScore(1);
+							bullets.splice(i,1)[0].dispose();
+							d.respawn(worldBox.width / 2.0, worldBox.height / 2.0);
+							break;
+						}
+					}
+				}
+			}
+
+		}
 	};
 
 	Coll.checkCollisions = function () {
 
+		Coll.checkBullets();
+
 		// @TODO: need to implement coarse grid-based optimization
 		// @TODO: it might be actually cool without CCD
 
-		var l_donuts = donuts.length;
-		var l_pills = pills.length;
+		var l_donuts = donuts.length - 1;
 		newPills = 0;
 
-		for(var i = l_donuts-1; i >= 0; i--) {
-			for (var j = l_pills-1; j >= 0; j--) {
-				var d = donuts[i];
+		for(var i = l_donuts; i >= 0; i--) {
+			var d = donuts[i];
+			var l_pills = pills.length - 1;
+			for (var j = l_pills; j >= 0; j--) {
+
 				var p = pills[j];
 
 				var distsq = (d.x() - p.x())*(d.x() - p.x()) + (d.y() - p.y())*(d.y() - p.y());
 				var sumr = (d.r() + p.r()) * (d.r() + p.r());
 
 				if ( distsq <= sumr ) {//|| Coll.ccd(d,p) ) {
-					Coll.handleCollision(d, p, j);
+					d.addStamina(p.getStamina());
+					pills.splice(j,1)[0].dispose();
+					newPills++;
 				}
 			}
 		}

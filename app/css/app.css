@@ -1,3 +1,7 @@
+body {
+	background-color: #002935;
+}
+
 #main-container {
 	position: absolute;
 	top: 5px;
@@ -5,5 +9,10 @@
 }
 
 #game-canvas {
-	background-color: #FFFFFF;
+	background-color: #002935;
+}
+
+@font-face {
+    font-family: 'FreePixel';
+    src: url('./FreePixel.ttf');
 }

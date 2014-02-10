@@ -101,12 +101,12 @@ Math.checkLineBoxIntersect = function (_p0, _p1, box) {
 				p1.x = x;
 				p1.y = y;
 				outcode1 = Math.computeCsCode(p1.x, p1.y, box);
-			
+			}
+		}
 	}
-
-}
-		return {
-			'accept' : accept,
+	
+	return {
+		'accept' : accept,
 		'p0' : p0,
 		'p1' : p1	
 	};
@@ -172,6 +172,25 @@ Math.checkLineCircleIntersect = function (p0, p1, c, r) {
 	var distsq = (c.x - intersect.x)*(c.x - intersect.x) + (c.y - intersect.y)*(c.y - intersect.y);
 
 	if (distsq <= r*r) {
+		return true;
+	}
+
+	return false;
+};
+
+Math.checkPointCircleIntersect = function(p0, c, r) {
+
+	var distsq = (p0.x - c.x)*(p0.x - c.x) + (p0.y - c.y)*(p0.y - c.y);
+	if (distsq <= r*r) {
+		return true;
+	}
+
+	return false;
+};
+
+Math.checkPointBoxIntersect = function(p0, box) {
+
+	if(p0.x > box.xmin && p0.x < box.xmax && p0.y > box.ymin && p0.y < box.ymax) {
 		return true;
 	}
 
