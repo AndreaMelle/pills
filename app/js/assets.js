@@ -23,6 +23,54 @@ var Assets = (function() {
 		ctx.strokeRect(bckg.x, bckg.y, bckg.width, bckg.height);
 	};
 
+	var wlc = {
+		x : GC.width() / 2 - 421/2,
+		y : GC.height() / 2 - 318/2,
+		width : 421,
+		height : 318,
+		fontSize : 16,
+		font : "px FreePixel",
+	};
+
+	wlc.draw = function (ctx) {
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = "#BFF4F5";
+		ctx.fillStyle = "#002935";
+		ctx.fillRect(wlc.x, wlc.y, wlc.width, wlc.height);
+		ctx.strokeRect(wlc.x, wlc.y, wlc.width, wlc.height);
+
+		ctx.font = wlc.fontSize + wlc.font;
+		ctx.fillStyle = colorLight;
+		ctx.setTransform(1,0,0,1,0,0);
+		ctx.translate(wlc.x + 30,wlc.y + 30);
+		var ty = 0;
+		ctx.fillText("Hi! Pick up pills to fire bullets.", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("Press '1' for player 1:", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'w' : thrust", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'a' : rotate left", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'd' : rotate right", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		's' : fire", 0, ty);
+		ty += wlc.fontSize + 10;
+
+		ctx.fillText("Press '2' for player 2:", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'up' : thrust", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'left' : rotate left", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'right' : rotate right", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		'down' : fire", 0, ty);
+		ty += wlc.fontSize + 10;
+
+		ctx.setTransform(1,0,0,1,0,0);
+	};
+
 	var leaderboard = {
 		fontSize : 16,
 		font : "px FreePixel",
@@ -178,6 +226,7 @@ var Assets = (function() {
 	that.leaderboard = leaderboard;
 	that.pill = pill({radius : 8});
 	that.bullet = bullet;
+	that.welcome = wlc;
 
 	that.setTri = function (value) {
 		tri = value;

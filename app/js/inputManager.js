@@ -16,7 +16,7 @@ var KeyboardManager = (function () {
 		CCW : 65,
 		CW : 68,
 		ACTION : 83,
-		name : 'player1'
+		name : 'p1'
 	});
 
 	var k2 = KeyboardController({
@@ -25,7 +25,7 @@ var KeyboardManager = (function () {
 		CCW : 37,
 		CW : 39,
 		ACTION : 40,
-		name : 'player2'
+		name : 'p2'
 	});
 	
 	that.init = function () {

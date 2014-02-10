@@ -16,7 +16,7 @@ var World = (function () {
 	colors.push("#D3464E");
 	colors.push("#009245");
 	var next = 0;
-	var radius = 40;
+	var radius = 35;
 
 	var spanPills = function (num) {
 		for(var i = 0; i < num; i++) {
@@ -100,6 +100,10 @@ var World = (function () {
 
 		for (var d in donuts) {
 			donuts[d].draw();
+		}
+
+		if (donuts.length <= 0) {
+			Assets.welcome.draw(ctx);
 		}
 
 		Assets.leaderboard.draw(ctx, donuts);
