@@ -10,6 +10,9 @@ var Ctrl = (function () {
 	var socket = null;
 
 	that.init = function (p, n) {
+
+		View.wait();
+
 		pin = p;
 		name = n;
 		console.log('new player: ' + pin + ' ' + name);
@@ -56,6 +59,7 @@ var Ctrl = (function () {
 	var onNewPlayer = function (data) {
 		console.log("actual name: " + data);
 		name = data;
+		View.showControls();
 		View.updateName(name);
 	};
 
@@ -206,6 +210,15 @@ var View = (function() {
 		$('#fireButton').css('border-color', color);
 	};
 
+	that.wait = function () {
+		$('#waitContainer').show();
+	};
+
+	that.showControls = function () {
+		$('#waitContainer').hide();
+		$('#controllerContainer').show();
+	};
+
 	return that;
 
 }());
@@ -221,7 +234,8 @@ var Login = (function() {
 			var name = $('#name').val();
 			event.preventDefault();
 
-			$('#formContainer').remove();
+			$('#formContainer').hide();
+			$('#waitContainer').show();
 
 			cb(pin, name);
  			return false;
@@ -233,6 +247,7 @@ var Login = (function() {
 }());
 
 window.addEventListener('unload', eventWindowUnloaded, false);
+window.addEventListener('pagehide', eventWindowUnloaded, false);
 window.addEventListener('load', eventWindowLoaded, false);
 
 function eventWindowUnloaded() {
@@ -242,6 +257,9 @@ function eventWindowUnloaded() {
 function eventWindowLoaded() {
 
 	//$('#formContainer').remove();
+	$('#waitContainer').hide();
+	$('#controllerContainer').hide();
+	
 
 	Login.handleForm(function(pin, name) {
 		View.init();
