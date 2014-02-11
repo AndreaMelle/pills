@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="author" content="Andrea Melle">
 
 <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
@@ -29,7 +29,7 @@
 
 <div class="row control-set">
 <div class="col-xs-6 col-xs-offset-6">
-<button type="button" id="fireButton" class="btn btn-custom" onclick="Ctrl.ctrlFire()">Fire</button>
+<button type="button" id="fireButton" class="btn btn-custom">Fire</button>
 </div>
 </div>
 
@@ -38,15 +38,15 @@
 
 <div class="row">
 <div class="col-xs-6">
-<button type="button" class="btn btn-custom" onclick="Ctrl.ctrlLeft()">Left</button>
+<button type="button" id="leftButton" class="btn btn-custom" >Left</button>
 </div>
 <div class="col-xs-6">
-<button type="button" class="btn btn-custom" onclick="Ctrl.ctrlRight()">Right</button></div>
+<button type="button" id="rightButton" class="btn btn-custom">Right</button></div>
 </div>
 
 </div>
 <div class="col-xs-6">
-<button type="button" class="btn btn-custom" onmousedown="Ctrl.ctrlThrustOn()" onmouseup="Ctrl.ctrlThrustOff()">Thrust</button>
+<button type="button" id="thrustButton" class="btn btn-custom">Thrust</button>
 </div>
 </div>
 

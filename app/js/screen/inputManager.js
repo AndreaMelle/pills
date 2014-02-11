@@ -52,7 +52,8 @@ var WebSocketManager = (function () {
 	};
 
 	that.init = function () {
-		socket = io.connect('http://localhost:' + socketPort + socketEndPoint);
+		//socket = io.connect('http://localhost:' + socketPort + socketEndPoint);
+		socket = io.connect(socketEndPoint);
 
 		socket.on(mp.IDENTIFY, function() {
 			onIdentify();

@@ -14,7 +14,8 @@ var Ctrl = (function () {
 		name = n;
 		console.log('new player: ' + pin + ' ' + name);
 
-		socket = io.connect('http://localhost:' + socketPort + socketEndPoint + '/' + pin);
+		//socket = io.connect('http://localhost:' + socketPort + socketEndPoint + '/' + pin);
+		socket = io.connect(socketEndPoint + '/' + pin);
 
 		socket.on(mp.IDENTIFY, function() {
 			onIdentify();
@@ -141,6 +142,33 @@ var View = (function() {
 
 	var that = {};
 
+	that.init = function () {
+		var touchable =  !!('ontouchstart' in window);
+
+		if (touchable) {
+			$('#fireButton').on('touchstart', function() { Ctrl.ctrlFire() });
+			//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
+
+			$('#thrustButton').on('touchstart', function() { Ctrl.ctrlThrustOn() });
+			$('#thrustButton').on('touchend', function() { Ctrl.ctrlThrustOff() });
+
+			$('#leftButton').on('touchstart', function() { Ctrl.ctrlLeft() });
+			$('#rightButton').on('touchstart', function() { Ctrl.ctrlRight() });
+
+		} else {
+
+			$('#fireButton').on('click', function () { Ctrl.ctrlFire(); });
+			//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
+
+			$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOn(); });
+			$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOff(); });
+
+			$('#leftButton').on('click', function () { Ctrl.ctrlLeft(); });
+			$('#rightButton').on('click', function () { Ctrl.ctrlRight(); });
+		}
+
+	};
+
 	that.updateName = function (name) {
 		$('#displayName').text(name);
 	};
@@ -183,7 +211,12 @@ function eventWindowUnloaded() {
 }
 
 function eventWindowLoaded() {
+
+	
+
 	Login.handleForm(function(pin, name) {
+		View.init();
 		Ctrl.init(pin, name);	
+		
 	});
 }
