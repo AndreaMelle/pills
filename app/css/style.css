@@ -1,0 +1,96 @@
+@font-face {
+    font-family: 'FreePixel';
+    src: url('./FreePixel.ttf');
+}
+
+html {
+	height: 100%;
+	padding-bottom: 40px;
+}
+
+body {
+	height: 100%;
+	background-color: #002935;
+	margin: 20px;
+	text-align: center;
+}
+
+.jumbotron {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: 0;
+	background-color: #002935;
+	color: #BFF4F5;
+	font-family: 'FreePixel';
+	
+}
+
+.jumbotron form {
+	
+	width: 40%;
+	margin: 0 auto;
+}
+
+.container {
+	width: 100%;
+	min-height: 100%;
+    margin: auto;
+	text-align: center;
+	border: 2px solid #BFF4F5;
+	font-family: 'FreePixel';
+	color: #BFF4F5;
+}
+
+.container header {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.control-set {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.btn-custom {
+  color: #002935;
+  background-color: #BFF4F5;
+  border-color: #BFF4F5;
+}
+.btn-custom:hover,
+.btn-custom:focus,
+.btn-custom:active,
+.btn-custom.active,
+.open .dropdown-toggle.btn-custom {
+  color: #002935;
+  background-color: #BFF4F5;
+  border-color: #BFF4F5;
+}
+.btn-custom:active,
+.btn-custom.active,
+.open .dropdown-toggle.btn-custom {
+  background-image: none;
+}
+.btn-custom.disabled,
+.btn-custom[disabled],
+fieldset[disabled] .btn-custom,
+.btn-custom.disabled:hover,
+.btn-custom[disabled]:hover,
+fieldset[disabled] .btn-custom:hover,
+.btn-custom.disabled:focus,
+.btn-custom[disabled]:focus,
+fieldset[disabled] .btn-custom:focus,
+.btn-custom.disabled:active,
+.btn-custom[disabled]:active,
+fieldset[disabled] .btn-custom:active,
+.btn-custom.disabled.active,
+.btn-custom[disabled].active,
+fieldset[disabled] .btn-custom.active {
+  background-color: #BFF4F5;
+  border-color: #BFF4F5;
+}
+.btn-custom .badge {
+  color: #002935;
+  background-color: #BFF4F5;
+}

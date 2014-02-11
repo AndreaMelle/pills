@@ -1,4 +1,3 @@
-
 var Controllers = (function () {
 
 	var that = {};
@@ -17,13 +16,109 @@ var Controllers = (function () {
 	that.remove = function (c) {
 		var idx = controllers.indexOf(c);
 		if(idx > -1) {
-			controllers.splice(idx,1)[0];
+			controllers.splice(idx,1)[0].dispose();
 		}
+	};
+
+	that.getByName = function (name) {
+		for (var c in controllers) {
+			if(controllers[c].getName() === name) {
+				return controllers[c];
+			}
+		}
+	};
+
+	that.removeByName = function (name) {
+		for (var c in controllers) {
+			if(controllers[c].getName() === name) {
+				that.remove(controllers[c]);
+			}
+		}
+	};
+
+	that.removeAll = function (name) {
+		for (var c in controllers) {
+			that.remove(controllers[c]);
+		}
+		controllers = [];
 	};
 
 	return that;
 
 }());
+
+var SocketController = function(spec) {
+	var that = {};
+	var socket = spec.socket || null;
+	var name = spec.name || null;
+	var player = null;	
+
+	that.update = function () {
+		// @TODO: query player for state change?
+	};
+
+	that.bind = function (p) {
+		p.controller = that;
+		player = p;
+	};
+
+	that.unbind = function (p) {
+		p.controller = null;
+		player = null;
+	};
+
+	that.getName = function () {
+		return name;
+	};
+
+	that.dispose = function () {
+		World.destroyPlayer(context);
+	};
+
+	that.on(evt, data) {
+		if (evt === mp.PLAYERINFO) {
+			socket.emit(mp.PLAYERINFO, {
+				mp.NAME : name,
+				mp.DATA : data
+			});
+		} else if (evt === mp.STAMINA) {
+			socket.emit(mp.STAMINA, {
+				mp.NAME : name,
+				mp.DATA : data
+			});
+		} else if (evt === mp.SCORE) {
+			socket.emit(mp.SCORE, {
+				mp.NAME : name,
+				mp.DATA : data
+			});
+		}
+	};
+
+	socket.on(COMMAND, function(data) {
+		if(data[mp.NAME] === name) {
+			var val = data[mp.DATA];
+
+			if(val === mp.THRUSTON) {
+				player.thrustOn();
+			} else if(val === mp.THRUSTOFF) {
+				player.thrustOff();
+			} else if(val === mp.CCW) {
+				player.rotateCCW();
+			} else if(val === mp.CW) {
+				player.rotateCW();
+			} else if(val === mp.FIRE) {
+				player.fire();
+			}
+
+			return false; // event used
+		}
+		return true; // pass on
+	});
+
+	World.createPlayer(that);
+
+	return that;
+};
 
 var KeyboardController = function(spec) {
 
@@ -68,6 +163,10 @@ var KeyboardController = function(spec) {
 		keySet['CW'].onPressed = null;
 		keySet['ACTION'].onPressed = null;
 		player.controller = null;
+	};
+
+	that.dispose = function () {
+
 	};
 
 	that.update = function () {

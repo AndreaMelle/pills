@@ -25,7 +25,7 @@ var Donut = function(spec) {
 	var rotVelocity = 2 * Math.PI / 180;
 	var bulletReady = 1;
 
-	that.respawn = function(_px, _py) {
+	that.respawn = function(_px, _py, color) {
 
 		px = _px || 0;
 		py = _py || 0;
@@ -63,6 +63,8 @@ var Donut = function(spec) {
 		World.P().addParticle(particle);
 		World.P().addBehavior(repulsion);
 		World.P().addBehavior(attraction);
+
+		controller.on(mp.PLAYERINFO, color);
 
 	};
 
@@ -140,12 +142,13 @@ var Donut = function(spec) {
 				'color' : asset.color()
 			}));
 
-			stamina = 0;
+			that.removeStamina();
 		}
 	};
 
 	that.addStamina = function (value) {
 		stamina += value;
+		controller.on(mp.STAMINA, stamina);
 	};
 
 	that.removeStamina = function (value) {
@@ -154,6 +157,7 @@ var Donut = function(spec) {
 		} else {
 			stamina = 0;
 		}
+		controller.on(mp.STAMINA, stamina);
 	};
 
 	that.getStamina = function () {
@@ -162,6 +166,7 @@ var Donut = function(spec) {
 
 	that.addScore = function (value) {
 		score += value;
+		controller.on(mp.SCORE, score);
 	};
 
 	that.getScore = function () {
