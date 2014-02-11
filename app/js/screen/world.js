@@ -12,11 +12,12 @@ var World = (function () {
 	var physics;
 	var newPills;
 
-	var colors = [];
-	colors.push("#D3464E");
-	colors.push("#009245");
 	var next = 0;
 	var radius = 35;
+	var maxNumPlayers = 5;
+
+	var KILLSCORE = 100;
+	var PILLSCORE = 1;
 
 	var spanPills = function (num) {
 		for(var i = 0; i < num; i++) {
@@ -110,22 +111,28 @@ var World = (function () {
 	};
 
 	my.createPlayer = function (controller) {
-		var c = colors[next % colors.length];
-		var d = new Donut({
-			x : worldBox.width / 2.0,
-			y : worldBox.height / 2.0,
-			color : c
-		});
-		next+=1;
-		controller.bind(d);
-		donuts.push(d);
-		controller.on(mp.PLAYERINFO, c);
+		if(donuts.length < maxNumPlayers) {
+			var c = Assets.playerColors[next % Assets.playerColors.length];
+			var d = new Donut({
+				x : worldBox.width / 2.0,
+				y : worldBox.height / 2.0,
+				color : c
+			});
+			next+=1;
+			controller.bind(d);
+			donuts.push(d);
+			controller.on(mp.PLAYERINFO, c);
+			return true;
+		} else {
+			console.log('Maxium number of players reached');
+			return false;
+		}
 	};
 
 	my.destroyPlayer = function (player) {
 		var idx = donuts.indexOf(player);
 		if(idx > -1) {
-			var d = donuts.splice(idx,1)[0];
+			var d = donuts.splice(idx,1)[0].dispose();
 			d.controller.unbind(d);
 			d = null;
 		}
@@ -256,7 +263,7 @@ var World = (function () {
 					var d = donuts[j];
 					if(b.owner() !== d) {
 						if( Coll.bulletCCD(d, b) ) {
-							b.owner().addScore(1);
+							b.owner().addScore(KILLSCORE);
 							bullets.splice(i,1)[0].dispose();
 							d.respawn(worldBox.width / 2.0, worldBox.height / 2.0);
 							break;
@@ -290,6 +297,7 @@ var World = (function () {
 
 				if ( distsq <= sumr ) {//|| Coll.ccd(d,p) ) {
 					d.addStamina(p.getStamina());
+					d.addScore(PILLSCORE);
 					pills.splice(j,1)[0].dispose();
 					newPills++;
 				}

@@ -35,10 +35,13 @@ var WebSocketManager = (function () {
 
 	var onNewplayer = function (data) {
 		console.log('new player: ' + data);
-		Controllers.add(SocketController({
+		var ctrl = SocketController({
 			'socket' : socket,
 			'name' : data
-		}));
+		});
+		if (ctrl) {
+			Controllers.add(ctrl);
+		}
 	};
 
 	var onRemoveplayer = function (data) {

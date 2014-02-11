@@ -15,7 +15,7 @@ var Controllers = (function () {
 
 	that.remove = function (c) {
 		var idx = controllers.indexOf(c);
-		if(idx > -1) {
+		if(idx > -1 && typeof c != 'KeyboardController') {
 			controllers.splice(idx,1)[0].dispose();
 		}
 	};
@@ -30,7 +30,7 @@ var Controllers = (function () {
 
 	that.removeByName = function (name) {
 		for (var c in controllers) {
-			if(controllers[c].getName() === name) {
+			if(controllers[c].getName() === name && typeof controllers[c] != 'KeyboardController') {
 				var ctrl = controllers.splice(c,1)[0];
 				ctrl.dispose();
 				ctrl = null;
@@ -42,7 +42,7 @@ var Controllers = (function () {
 		for (var c in controllers) {
 			that.remove(controllers[c]);
 		}
-		controllers = [];
+		//controllers = [];
 	};
 
 	return that;
@@ -146,9 +146,13 @@ var SocketController = function(spec) {
 		return true; // pass on
 	});
 
-	World.createPlayer(that);
-
-	return that;
+	if( !World.createPlayer(that) ) {
+		// reached max num of players
+		socket.emit(mp.ERROR, mp.NEWPLAYER);
+		return null;
+	} else {
+		return that;
+	}
 };
 
 var KeyboardController = function(spec) {
@@ -243,6 +247,8 @@ var KeyboardController = function(spec) {
 	that.getName = function () {
 		return name;
 	};
+
+	that.on = function(evt, data) {};
 
 	return that;
 };

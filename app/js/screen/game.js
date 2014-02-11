@@ -12,7 +12,7 @@ var Game = (function () {
 	
 	my.start = function () {
 		GC.init();
-		//KeyboardManager.init();
+		KeyboardManager.init();
 		WebSocketManager.init();
 		World.init();
 		setInterval(run, GC.intervalTime);

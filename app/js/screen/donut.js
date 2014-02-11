@@ -14,6 +14,7 @@ var Donut = function(spec) {
 	var constForce;
 	var asset;
 	var score = 0;
+	var fireCounter = 0;
 	that.controller = null;
 
 	var radius = 27;
@@ -24,7 +25,9 @@ var Donut = function(spec) {
 	var maxThrust = 0.03;
 	var maxVelocity = 5; // not sure how to apply this in the physics lib
 	var rotVelocity = 2 * Math.PI / 180;
-	var bulletReady = 1;
+	//var bulletReady = 1;
+	var maxStamina = 8;
+	var fireDelay = 15; // @TODO: should be dependent on actual framerate
 
 	that.respawn = function(_px, _py, color) {
 
@@ -34,22 +37,10 @@ var Donut = function(spec) {
 		dx = Math.cos(rotation);
 		dy = Math.sin(rotation);
 		thrust = 0;
+		fireCounter = 0;
 		stamina = 1;//0;
 
-		if (repulsion) {
-			World.P().removeBehavior(repulsion);
-		}
-
-		if (attraction) {
-			World.P().removeBehavior(attraction);
-		}
-
-		if (particle) {
-			if (constForce) {
-				particle.removeBehavior(constForce);			
-			}
-			World.P().removeParticle(particle);
-		}
+		that.dispose();
 
 		particle = new VerletParticle2D(px, py);
 		particle.tag = "donut";
@@ -65,6 +56,23 @@ var Donut = function(spec) {
 		World.P().addBehavior(repulsion);
 		World.P().addBehavior(attraction);
 
+	};
+
+	that.dispose = function () {
+		if (repulsion) {
+			World.P().removeBehavior(repulsion);
+		}
+
+		if (attraction) {
+			World.P().removeBehavior(attraction);
+		}
+
+		if (particle) {
+			if (constForce) {
+				particle.removeBehavior(constForce);			
+			}
+			World.P().removeParticle(particle);
+		}
 	};
 
 	that.respawn(spec.x, spec.y, spec.color);
@@ -86,6 +94,7 @@ var Donut = function(spec) {
 		px = particle.x;
 		py = particle.y;
 
+		fireCounter--;
 	};
 
 	var drawPhysicsDebug = function (ctx) {
@@ -100,9 +109,6 @@ var Donut = function(spec) {
 		var ctx = GC.get();
 
 		var text = stamina;
-		if (stamina >= bulletReady) {
-			text = "b"
-		}
 
 		asset.draw(ctx, px, py, dx, dy, rotation, text);
 
@@ -130,7 +136,7 @@ var Donut = function(spec) {
 
 	that.fire = function () {
 
-		if(stamina >= bulletReady) {
+		if(stamina > 0 && fireCounter <= 0) {
 
 			World.fireBullet(Bullet({
 				'x' : px,
@@ -141,13 +147,16 @@ var Donut = function(spec) {
 				'color' : asset.color()
 			}));
 
-			that.removeStamina();
+			that.removeStamina(1);
+			fireCounter = fireDelay;
 		}
 	};
 
 	that.addStamina = function (value) {
-		stamina += value;
-		that.controller.on(mp.STAMINA, stamina);
+		if( stamina < maxStamina) {
+			stamina += value;
+			that.controller.on(mp.STAMINA, stamina);
+		}
 	};
 
 	that.removeStamina = function (value) {

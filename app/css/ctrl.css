@@ -31,11 +31,11 @@ body {
 	background-color: #002935;
 	color: #BFF4F5;
 	font-family: 'FreePixel';
-	
+	z-index: 999999 !important;
 }
 
 .jumbotron form {
-	
+	background-color: #002935;
 	width: 40%;
 	margin: 0 auto;
 }
@@ -66,6 +66,9 @@ body {
   color: #002935;
   background-color: #BFF4F5;
   border-color: #BFF4F5;
+  padding: 20px;
+  padding-left: 40px;
+  padding-right: 40px;
 }
 .btn-custom:hover,
 .btn-custom:focus,

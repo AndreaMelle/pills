@@ -96,6 +96,7 @@ var Ctrl = (function () {
 	that.onScoreUpdate = function (data) {
 		// when the player scores
 		console.log('score: ' + data[mp.DATA]);
+		View.updateScore(data[mp.DATA]);
 	};
 
 	that.onEnd = function () {
@@ -196,8 +197,13 @@ var View = (function() {
 		$('#displayName').text(name);
 	};
 
+	that.updateScore = function (score) {
+		$('#displayScore').text(score);
+	};
+
 	that.updateColor = function (color) {
 		$('#fireButton').css('background-color', color);
+		$('#fireButton').css('border-color', color);
 	};
 
 	return that;
@@ -234,6 +240,8 @@ function eventWindowUnloaded() {
 }
 
 function eventWindowLoaded() {
+
+	//$('#formContainer').remove();
 
 	Login.handleForm(function(pin, name) {
 		View.init();
