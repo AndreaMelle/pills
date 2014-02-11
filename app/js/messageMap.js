@@ -10,6 +10,7 @@ var mp = (function () {
 	// game session
 	that.IDENTIFY = 'l';
 	that.END = 'e'; // fired when game disconnected
+	that.ERROR = 'q';
 	
 	// components creation
 	that.NEWSCREEN = 'ns'
@@ -20,10 +21,7 @@ var mp = (function () {
 	that.SCREENINFO = 'si';
 	that.PLAYERINFO = 'pi';
 
-	// gameplay
-	that.STAMINA = 'b';
-	that.SCORE = 's';
-	that.COMMAND = 'c';
+	
 
 	/*
 	 * Values
@@ -37,9 +35,17 @@ var mp = (function () {
 	// gameplay
 	that.CCW =  'l';
 	that.CW =  'r';
-	that.THRUSTON =  'ty';
-	that.THRUSTOFF =  'tn';
-	that.FIRE =  'f';
+	that.THRUSTON = 'ty';
+	that.THRUSTOFF = 'tn';
+	that.FIRE = 'f';
+	// gameplay
+	that.STAMINA = 'b';
+	that.SCORE = 's';
+	that.COMMAND = 'c';
 
 	return that;
 }());
+
+if(typeof module != 'undefined') {
+	module.exports = mp;
+}

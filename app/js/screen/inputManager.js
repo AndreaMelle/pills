@@ -7,7 +7,7 @@ var WebSocketManager = (function () {
 	var pin = null;
 
 	var onIdentify = function () {
-		console.log('sending identification data');
+		console.log('Sending new screen request.');
 		socket.emit(mp.NEWSCREEN);
 	};
 
@@ -16,36 +16,8 @@ var WebSocketManager = (function () {
 		console.log('Pin: ' + data);
 		pin = data;
 		// ready to render - call a callback or something
-	};
 
-	var onNewplayer = function (data) {
-		console.log('new player: ' + data);
-		Controllers.add(SocketController({
-			'socket' : socket,
-			'name' : data
-		}));
-	};
-
-	var onRemoveplayer = function (data) {
-		console.log('remove player: ' + data);
-		var c = Controllers.removeByName(data);
-	};
-
-	var onEnd = function () {
-		console.log('game ended');
-		Controllers.removeAll();
-	};
-
-	that.init() = function () {
-		socket = io.connect('http://localhost:' + socketPort + socketEndPoint);
-
-		socket.on(mp.IDENTIFY, function() {
-			identify();
-		});
-
-		socket.on(mp.SCREENINFO, function(data) {
-			onScreenInfo(data);
-		});
+		//socket = io.connect('http://localhost:' + socketPort + socketEndPoint + '/' + pin);
 
 		socket.on(mp.NEWPLAYER, function(data) {
 			onNewplayer(data);
@@ -61,7 +33,37 @@ var WebSocketManager = (function () {
 
 	};
 
-	that.dispose() = function () {
+	var onNewplayer = function (data) {
+		console.log('new player: ' + data);
+		Controllers.add(SocketController({
+			'socket' : socket,
+			'name' : data
+		}));
+	};
+
+	var onRemoveplayer = function (data) {
+		console.log('remove player: ' + data);
+		Controllers.removeByName(data);
+	};
+
+	var onEnd = function () {
+		console.log('game ended');
+		Controllers.removeAll();
+	};
+
+	that.init = function () {
+		socket = io.connect('http://localhost:' + socketPort + socketEndPoint);
+
+		socket.on(mp.IDENTIFY, function() {
+			onIdentify();
+		});
+
+		socket.on(mp.SCREENINFO, function(data) {
+			onScreenInfo(data);
+		});
+	};
+
+	that.dispose = function () {
 		console.log('screen wants to end');
 		socket.emit(mp.END);
 		socket = null;

@@ -14,10 +14,14 @@ var Ctrl = (function () {
 		name = n;
 		console.log('new player: ' + pin + ' ' + name);
 
-		socket = io.connect('http://localhost:' + socketPort + socketEndPoint);
+		socket = io.connect('http://localhost:' + socketPort + socketEndPoint + '/' + pin);
 
 		socket.on(mp.IDENTIFY, function() {
 			onIdentify();
+		});
+
+		socket.on(mp.NEWPLAYER, function (data) {
+			onNewPlayer(data);
 		});
 
 		socket.on(mp.PLAYERINFO, function(data) {
@@ -36,18 +40,51 @@ var Ctrl = (function () {
 			that.onEnd();
 		});
 
+		socket.on(mp.ERROR, function (data) {
+			onErr(data);
+		});
+
+	};
+
+	that.dispose = function () {
+		if(socket) {
+			that.ctrlRemovePlayer();
+		}
+	}
+
+	var onNewPlayer = function (data) {
+		console.log("actual name: " + data);
+		name = data;
+		View.updateName(name);
 	};
 
 	var onIdentify = function () {
 		console.log('sending identification data');
 		if(pin && name) {
-			socket.emit(NEWPLAYER, {mp.PIN : pin, mp.NAME : name});
+			var out = {};
+			out[mp.PIN] = pin;
+			out[mp.NAME] = name;
+			socket.emit(mp.NEWPLAYER, out);
 		}
+	};
+
+	var onErr = function (data) {
+		if(data == mp.NAME) {
+			View.updateName('name already in use!');
+		}
+	};
+
+	var sendCommand = function (command) {
+		var out = {};
+		out[mp.NAME] = name;
+		out[mp.DATA] = command;
+		socket.emit(mp.COMMAND, out);
 	};
 
 	that.onPlayerInfo = function (data) {
 		// here the color is given
 		console.log('player info: ' + data[mp.DATA]);
+		View.updateColor(data[mp.DATA]);
 	};
 
 	that.onStaminaUpdate = function (data) {
@@ -67,44 +104,53 @@ var Ctrl = (function () {
 
 	that.ctrlFire = function () {
 		console.log("fire");
-		socket.emit(mp.COMMAND, {
-			mp.NAME : name,
-			mp.DATA : mp.FIRE
-		});
+		sendCommand(mp.FIRE);
 	};
 
 	that.ctrlLeft = function () {
 		console.log("ccw");
-		socket.emit(mp.COMMAND, {
-			mp.NAME : name,
-			mp.DATA : mp.CCW
-		});
+		sendCommand(mp.CCW);
 	};
 
 	that.ctrlRight = function () {
 		console.log("cw");
-		socket.emit(mp.COMMAND, {
-			mp.NAME : name,
-			mp.DATA : mp.CW
-		});
+		sendCommand(mp.CW);
 	};
 
-	that.ctrlThrust = function () {
-		console.log("thrust");
-		socket.emit(mp.COMMAND, {
-			mp.NAME : name,
-			mp.DATA : mp.THRUST
-		});
+	that.ctrlThrustOn = function () {
+		console.log("thrust on");
+		sendCommand(mp.THRUSTON);
+	};
+
+	that.ctrlThrustOff = function () {
+		console.log("thrust off");
+		sendCommand(mp.THRUSTOFF);
 	};
 
 	that.ctrlRemovePlayer = function () {
 		console.log('player wants to end');
-		socket.emit(mp.REMOVEPLAYER);
+		socket.emit(mp.REMOVEPLAYER, name);
 	};
 
 
 
 	return that;
+}());
+
+var View = (function() {
+
+	var that = {};
+
+	that.updateName = function (name) {
+		$('#displayName').text(name);
+	};
+
+	that.updateColor = function (color) {
+		$('#fireButton').css('background-color', color);
+	};
+
+	return that;
+
 }());
 
 var Login = (function() {
@@ -129,15 +175,15 @@ var Login = (function() {
 
 }());
 
-
+window.addEventListener('unload', eventWindowUnloaded, false);
 window.addEventListener('load', eventWindowLoaded, false);
 
+function eventWindowUnloaded() {
+	Ctrl.dispose();
+}
+
 function eventWindowLoaded() {
-	
-	
 	Login.handleForm(function(pin, name) {
 		Ctrl.init(pin, name);	
 	});
-	
-
 }

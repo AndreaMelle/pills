@@ -12,6 +12,8 @@
 <script src="http://localhost:5000/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="js/deps/jquery.min.js" type="text/javascript"></script>
 <script src="js/deps/bootstrap.min.js" type="text/javascript"></script>
+
+<script src="js/messageMap.js" type="text/javascript"></script>
 <script src="js/ctrl/ctrl.js" type="text/javascript"></script>
 
 <title>pills</title>
@@ -21,17 +23,13 @@
 
 <div class="container">
 <header class="row">
-<div class="col-xs-6">
-	Name
-</div>
-<div class="col-xs-6">
-	Score
-</div>
+<div class="col-xs-6" id="displayName">Name</div>
+<div class="col-xs-6">0</div>
 </header>
 
 <div class="row control-set">
 <div class="col-xs-6 col-xs-offset-6">
-<button type="button" class="btn btn-custom" onclick="Ctrl.ctrlFire()">Fire</button>
+<button type="button" id="fireButton" class="btn btn-custom" onclick="Ctrl.ctrlFire()">Fire</button>
 </div>
 </div>
 
@@ -48,7 +46,7 @@
 
 </div>
 <div class="col-xs-6">
-<button type="button" class="btn btn-custom" onclick="Ctrl.ctrlThrust()">Thrust</button>
+<button type="button" class="btn btn-custom" onmousedown="Ctrl.ctrlThrustOn()" onmouseup="Ctrl.ctrlThrustOff()">Thrust</button>
 </div>
 </div>
 

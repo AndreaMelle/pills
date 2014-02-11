@@ -110,14 +110,16 @@ var World = (function () {
 	};
 
 	my.createPlayer = function (controller) {
+		var c = colors[next % colors.length];
 		var d = new Donut({
 			x : worldBox.width / 2.0,
 			y : worldBox.height / 2.0,
-			color : colors[next % colors.length]
+			color : c
 		});
 		next+=1;
 		controller.bind(d);
 		donuts.push(d);
+		controller.on(mp.PLAYERINFO, c);
 	};
 
 	my.destroyPlayer = function (player) {

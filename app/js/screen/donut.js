@@ -14,6 +14,7 @@ var Donut = function(spec) {
 	var constForce;
 	var asset;
 	var score = 0;
+	that.controller = null;
 
 	var radius = 27;
 	var repulsionRadius = radius * 3;
@@ -63,8 +64,6 @@ var Donut = function(spec) {
 		World.P().addParticle(particle);
 		World.P().addBehavior(repulsion);
 		World.P().addBehavior(attraction);
-
-		controller.on(mp.PLAYERINFO, color);
 
 	};
 
@@ -148,7 +147,7 @@ var Donut = function(spec) {
 
 	that.addStamina = function (value) {
 		stamina += value;
-		controller.on(mp.STAMINA, stamina);
+		that.controller.on(mp.STAMINA, stamina);
 	};
 
 	that.removeStamina = function (value) {
@@ -157,7 +156,7 @@ var Donut = function(spec) {
 		} else {
 			stamina = 0;
 		}
-		controller.on(mp.STAMINA, stamina);
+		that.controller.on(mp.STAMINA, stamina);
 	};
 
 	that.getStamina = function () {
@@ -166,7 +165,7 @@ var Donut = function(spec) {
 
 	that.addScore = function (value) {
 		score += value;
-		controller.on(mp.SCORE, score);
+		that.controller.on(mp.SCORE, score);
 	};
 
 	that.getScore = function () {

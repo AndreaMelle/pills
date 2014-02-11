@@ -31,7 +31,9 @@ var Controllers = (function () {
 	that.removeByName = function (name) {
 		for (var c in controllers) {
 			if(controllers[c].getName() === name) {
-				that.remove(controllers[c]);
+				var ctrl = controllers.splice(c,1)[0];
+				ctrl.dispose();
+				ctrl = null;
 			}
 		}
 	};
@@ -72,29 +74,26 @@ var SocketController = function(spec) {
 	};
 
 	that.dispose = function () {
-		World.destroyPlayer(context);
-	};
-
-	that.on(evt, data) {
-		if (evt === mp.PLAYERINFO) {
-			socket.emit(mp.PLAYERINFO, {
-				mp.NAME : name,
-				mp.DATA : data
-			});
-		} else if (evt === mp.STAMINA) {
-			socket.emit(mp.STAMINA, {
-				mp.NAME : name,
-				mp.DATA : data
-			});
-		} else if (evt === mp.SCORE) {
-			socket.emit(mp.SCORE, {
-				mp.NAME : name,
-				mp.DATA : data
-			});
+		if (player) {
+			World.destroyPlayer(player);
 		}
 	};
 
-	socket.on(COMMAND, function(data) {
+	that.on = function(evt, data) {
+		var out = {};
+		out[mp.NAME] = name;
+		out[mp.DATA] = data;
+
+		if (evt === mp.PLAYERINFO) {
+			socket.emit(mp.PLAYERINFO, out);
+		} else if (evt === mp.STAMINA) {
+			socket.emit(mp.STAMINA, out);
+		} else if (evt === mp.SCORE) {
+			socket.emit(mp.SCORE, out);
+		}
+	};
+
+	socket.on(mp.COMMAND, function(data) {
 		if(data[mp.NAME] === name) {
 			var val = data[mp.DATA];
 
