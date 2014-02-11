@@ -118,6 +118,26 @@ var Ctrl = (function () {
 		sendCommand(mp.CW);
 	};
 
+	that.ctrlLeftOn = function () {
+		console.log("ccw on");
+		sendCommand(mp.CCWON);
+	};
+
+	that.ctrlRightOn = function () {
+		console.log("cw on");
+		sendCommand(mp.CWON);
+	};
+
+	that.ctrlLeftOff = function () {
+		console.log("ccw off");
+		sendCommand(mp.CCWOFF);
+	};
+
+	that.ctrlRightOff = function () {
+		console.log("cw off");
+		sendCommand(mp.CWOFF);
+	};
+
 	that.ctrlThrustOn = function () {
 		console.log("thrust on");
 		sendCommand(mp.THRUSTON);
@@ -152,8 +172,11 @@ var View = (function() {
 			$('#thrustButton').on('touchstart', function() { Ctrl.ctrlThrustOn() });
 			$('#thrustButton').on('touchend', function() { Ctrl.ctrlThrustOff() });
 
-			$('#leftButton').on('touchstart', function() { Ctrl.ctrlLeft() });
-			$('#rightButton').on('touchstart', function() { Ctrl.ctrlRight() });
+			$('#leftButton').on('touchstart', function() { Ctrl.ctrlLeftOn() });
+			$('#leftButton').on('touchend', function() { Ctrl.ctrlLeftOff() });
+
+			$('#rightButton').on('touchstart', function() { Ctrl.ctrlRightOn() });
+			$('#rightButton').on('touchend', function() { Ctrl.ctrlRightOff() });
 
 		} else {
 
@@ -211,8 +234,6 @@ function eventWindowUnloaded() {
 }
 
 function eventWindowLoaded() {
-
-	
 
 	Login.handleForm(function(pin, name) {
 		View.init();

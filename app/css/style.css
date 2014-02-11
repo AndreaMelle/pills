@@ -48,6 +48,8 @@ body {
 	border: 2px solid #BFF4F5;
 	font-family: 'FreePixel';
 	color: #BFF4F5;
+	-webkit-touch-callout: none;
+  	-webkit-user-select: none;
 }
 
 .container header {

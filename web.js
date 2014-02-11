@@ -56,6 +56,11 @@ var newGameContext = function (pin, gameSocket) {
 			socket.emit(mp.PLAYERINFO, data);
 		});
 
+		gameSocket.on('disconnect', function() {
+			// screen died
+			socket.emit(mp.END);
+		});
+
 		socket.on(mp.COMMAND, function (data) {
 			gameSocket.emit(mp.COMMAND, data);
 		});
@@ -95,6 +100,20 @@ var newGameContext = function (pin, gameSocket) {
 			} else {
 				console.log("Game context " + data[mp.PIN] + " not found.")
 			}
+		});
+
+		socket.on('disconnect', function () {
+			// the player left
+			socket.get('name', function(err, data) {
+				if(err) { throw err; }
+				// @TODO: duplicate code
+				console.log('Player: ' + data + ' left the game');
+				var idx = players.indexOf(data);
+				if(idx > -1) {
+					players.splice(idx,1)[0];
+					gameSocket.emit(mp.REMOVEPLAYER, data);
+				}
+			});
 		});
 
 		socket.emit(mp.IDENTIFY);

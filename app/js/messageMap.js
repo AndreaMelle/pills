@@ -35,6 +35,10 @@ var mp = (function () {
 	// gameplay
 	that.CCW =  'l';
 	that.CW =  'r';
+	that.CCWON =  'lt';
+	that.CWON =  'rt';
+	that.CCWOFF =  'lf';
+	that.CWOFF =  'rf';
 	that.THRUSTON = 'ty';
 	that.THRUSTOFF = 'tn';
 	that.FIRE = 'f';

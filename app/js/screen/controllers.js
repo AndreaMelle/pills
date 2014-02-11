@@ -53,10 +53,37 @@ var SocketController = function(spec) {
 	var that = {};
 	var socket = spec.socket || null;
 	var name = spec.name || null;
-	var player = null;	
+	var player = null;
+
+	var commands = {
+		'thrust' : false,
+		'ccw' : false,
+		'cw' : false,
+		'fire' : false
+	};
 
 	that.update = function () {
-		// @TODO: query player for state change?
+		if(commands['thrust']) {
+			player.thrustOn();
+		} else {
+			player.thrustOff();
+		}
+
+		if(commands['ccw']) {
+			player.rotateCCW();
+		}
+
+		if(commands['cw']) {
+			player.rotateCW();
+		}
+
+		if(commands['fire']) {
+			player.fire();
+			commands['fire'] = false;
+			// @NOTE: currently we don't allow continous firing
+			// you gotta press the button again to fire again
+		}
+
 	};
 
 	that.bind = function (p) {
@@ -98,15 +125,20 @@ var SocketController = function(spec) {
 			var val = data[mp.DATA];
 
 			if(val === mp.THRUSTON) {
-				player.thrustOn();
+				commands['thrust'] = true;
 			} else if(val === mp.THRUSTOFF) {
-				player.thrustOff();
-			} else if(val === mp.CCW) {
-				player.rotateCCW();
-			} else if(val === mp.CW) {
-				player.rotateCW();
-			} else if(val === mp.FIRE) {
-				player.fire();
+				commands['thrust'] = false;
+			} else if(val === mp.CCWON) {
+				commands['ccw'] = true;
+			} else if(val === mp.CCWOFF) {
+				commands['ccw'] = false;
+			} else if(val === mp.CWON) {
+				commands['cw'] = true;
+			} else if(val === mp.CWOFF) {
+				commands['cw'] = false;
+			}  
+			else if(val === mp.FIRE) {
+				commands['fire'] = true;
 			}
 
 			return false; // event used
