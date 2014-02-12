@@ -75,7 +75,8 @@ var Ctrl = (function () {
 
 	var onErr = function (data) {
 		if(data == mp.NAME) {
-			View.updateName('name already in use!');
+			View.errName();
+			socket = null;
 		}
 	};
 
@@ -211,12 +212,28 @@ var View = (function() {
 	};
 
 	that.wait = function () {
-		//$('#waitContainer').show();
+		$('#waitContainer').show();
 	};
 
 	that.showControls = function () {
-		//$('#waitContainer').hide();
-		//$('#controllerContainer').show();
+		$('#waitContainer').hide();
+		$('#controllerContainer').show();
+	};
+
+	that.errName = function () {
+		$('#waitContainer').hide();
+		$('#controllerContainer').hide();
+		$('#formContainer').show();
+		$('#displayError').text('Player name already in use');
+		$('#displayError').show();
+	};
+
+	that.errEmpty = function (what) {
+		$('#waitContainer').hide();
+		$('#controllerContainer').hide();
+		$('#formContainer').show();
+		$('#displayError').text('Missing ' + what);
+		$('#displayError').show();
 	};
 
 	return that;
@@ -234,10 +251,18 @@ var Login = (function() {
 			var name = $('#name').val();
 			event.preventDefault();
 
-			$('#formContainer').hide();
-			//$('#waitContainer').show();
-
-			cb(pin, name);
+			if(pin && name) {
+				$('#formContainer').hide();
+				$('#waitContainer').show();
+				$('#displayError').hide();
+				cb(pin, name);
+			} else {
+				if(!pin) {
+					View.errEmpty('pin');
+				} else {
+					View.errEmpty('name');
+				}
+			}
  			return false;
 		});
 	};
@@ -247,7 +272,7 @@ var Login = (function() {
 }());
 
 window.addEventListener('unload', eventWindowUnloaded, false);
-//window.addEventListener('pagehide', eventWindowUnloaded, false);
+window.addEventListener('pagehide', eventWindowUnloaded, false);
 window.addEventListener('load', eventWindowLoaded, false);
 
 function eventWindowUnloaded() {
@@ -257,8 +282,10 @@ function eventWindowUnloaded() {
 function eventWindowLoaded() {
 
 	//$('#formContainer').remove();
-	//$('#waitContainer').hide();
-	//$('#controllerContainer').hide();
+	$('#waitContainer').hide();
+	$('#controllerContainer').hide();
+	$('#formContainer').show();
+	$('#displayError').hide();
 	
 
 	Login.handleForm(function(pin, name) {

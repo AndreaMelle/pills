@@ -3,9 +3,12 @@ body {
 }
 
 #main-container {
-	position: absolute;
+	/*position: absolute;
 	top: 5px;
-	left: 5px;
+	left: 5px;*/
+	width: 100%;
+	margin: 0 auto;
+	text-align: center;
 }
 
 #game-canvas {
