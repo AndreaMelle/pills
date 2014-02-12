@@ -193,6 +193,7 @@ var View = (function() {
 
 	that.updateName = function (name) {
 		$('#displayName').text(name);
+		$(document).attr('title', name);
 	};
 
 	that.updateScore = function (score) {
@@ -293,7 +294,7 @@ function eventWindowLoaded() {
 		View.errTouch();
 	} else {
 		$('#formContainer').show();
-		
+
 		Login.handleForm(function(pin, name) {
 			View.init();
 			Ctrl.init(pin, name);
