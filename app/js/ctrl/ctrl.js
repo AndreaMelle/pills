@@ -169,33 +169,26 @@ var View = (function() {
 	var that = {};
 
 	that.init = function () {
-		var touchable =  !!('ontouchstart' in window);
+		$('#fireButton').on('touchstart', function() { Ctrl.ctrlFire() });
+		//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
 
-		if (touchable) {
-			$('#fireButton').on('touchstart', function() { Ctrl.ctrlFire() });
-			//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
+		$('#thrustButton').on('touchstart', function() { Ctrl.ctrlThrustOn() });
+		$('#thrustButton').on('touchend', function() { Ctrl.ctrlThrustOff() });
 
-			$('#thrustButton').on('touchstart', function() { Ctrl.ctrlThrustOn() });
-			$('#thrustButton').on('touchend', function() { Ctrl.ctrlThrustOff() });
+		$('#leftButton').on('touchstart', function() { Ctrl.ctrlLeftOn() });
+		$('#leftButton').on('touchend', function() { Ctrl.ctrlLeftOff() });
 
-			$('#leftButton').on('touchstart', function() { Ctrl.ctrlLeftOn() });
-			$('#leftButton').on('touchend', function() { Ctrl.ctrlLeftOff() });
+		$('#rightButton').on('touchstart', function() { Ctrl.ctrlRightOn() });
+		$('#rightButton').on('touchend', function() { Ctrl.ctrlRightOff() });
 
-			$('#rightButton').on('touchstart', function() { Ctrl.ctrlRightOn() });
-			$('#rightButton').on('touchend', function() { Ctrl.ctrlRightOff() });
-
-		} else {
-
-			$('#fireButton').on('click', function () { Ctrl.ctrlFire(); });
-			//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
-
-			$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOn(); });
-			$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOff(); });
-
-			$('#leftButton').on('click', function () { Ctrl.ctrlLeft(); });
-			$('#rightButton').on('click', function () { Ctrl.ctrlRight(); });
-		}
-
+		/*
+		$('#fireButton').on('click', function () { Ctrl.ctrlFire(); });
+		//$('#fireButton').addEventListener( 'touchend', onTouchEnd, false );
+		$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOn(); });
+		$('#thrustButton').on('click', function () { Ctrl.ctrlThrustOff(); });
+		$('#leftButton').on('click', function () { Ctrl.ctrlLeft(); });
+		$('#rightButton').on('click', function () { Ctrl.ctrlRight(); });
+		*/
 	};
 
 	that.updateName = function (name) {
@@ -234,6 +227,13 @@ var View = (function() {
 		$('#formContainer').show();
 		$('#displayError').text('Missing ' + what);
 		$('#displayError').show();
+	};
+
+	that.errTouch = function () {
+		$('#waitContainer').hide();
+		$('#controllerContainer').hide();
+		$('#formContainer').hide();
+		$('#displayNoTouch').show();
 	};
 
 	return that;
@@ -280,17 +280,23 @@ function eventWindowUnloaded() {
 }
 
 function eventWindowLoaded() {
+	var touchable =  !!('ontouchstart' in window);
 
 	//$('#formContainer').remove();
+	$('#displayNoTouch').hide();
 	$('#waitContainer').hide();
 	$('#controllerContainer').hide();
-	$('#formContainer').show();
+	$('#formContainer').hide();
 	$('#displayError').hide();
-	
 
-	Login.handleForm(function(pin, name) {
-		View.init();
-		Ctrl.init(pin, name);	
+	if (!touchable) {
+		View.errTouch();
+	} else {
+		$('#formContainer').show();
 		
-	});
+		Login.handleForm(function(pin, name) {
+			View.init();
+			Ctrl.init(pin, name);
+		});
+	}
 }
