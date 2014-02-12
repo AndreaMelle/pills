@@ -64,10 +64,25 @@ var Assets = (function() {
 		ctx.setTransform(1,0,0,1,0,0);
 		ctx.translate(wlc.x + 30,wlc.y + 30);
 		var ty = 0;
-		ctx.fillText("Welcome!", 0, ty);
+
+		var tx = (wlc.width - ctx.measureText("Welcome!").width) / 2 - 30;
+
+		ctx.fillText("Welcome!", tx, ty);
+		ty += 2*(wlc.fontSize) + 10;
+
+		var thisurl = document.URL;
+		var ctrlulr = '<your-host-ip>:5000/ctrl.html';
+
+		if(thisurl.indexOf("radiant-woodland-1083") != -1) {
+			ctrlulr = 'pillsctrl.andmelle.com';
+		}
+		
+		ctx.fillText("1. connect your device to:", 0, ty);
 		ty += wlc.fontSize + 10;
-		ctx.fillText("1. connect to pills.com on you device", 0, ty);
+
+		ctx.fillText(ctrlulr, 60, ty);
 		ty += wlc.fontSize + 10;
+
 		ctx.fillText("2. type in the code you see down left", 0, ty);
 		ty += wlc.fontSize + 10;
 		ctx.fillText("3. pick up pills to fire bullets", 0, ty);
