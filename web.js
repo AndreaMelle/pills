@@ -45,15 +45,30 @@ var newGameContext = function (pin, gameSocket) {
 	gameCtx.on('connection', function(socket) {
 
 		gameSocket.on(mp.SCORE, function (data) {
-			socket.emit(mp.SCORE, data);
+			socket.get('name', function(err, name) {
+				if(err) { throw err; }
+				if(data[mp.NAME] === name) {
+					socket.emit(mp.SCORE, data);
+				}
+			});
 		});
 
 		gameSocket.on(mp.STAMINA, function (data) {
-			socket.emit(mp.STAMINA, data);
+			socket.get('name', function(err, name) {
+				if(err) { throw err; }
+				if(data[mp.NAME] === name) {
+					socket.emit(mp.STAMINA, data);
+				}
+			});
 		});
 
 		gameSocket.on(mp.PLAYERINFO, function (data) {
-			socket.emit(mp.PLAYERINFO, data);
+			socket.get('name', function(err, name) {
+				if(err) { throw err; }
+				if(data[mp.NAME] === name) {
+					socket.emit(mp.PLAYERINFO, data);
+				}
+			});
 		});
 
 		gameSocket.on('disconnect', function() {
