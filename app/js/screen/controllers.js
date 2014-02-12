@@ -29,10 +29,12 @@ var Controllers = (function () {
 	};
 
 	that.removeByName = function (name) {
-		for (var c in controllers) {
-			if(controllers[c].getName() === name && typeof controllers[c] != 'KeyboardController') {
-				var ctrl = controllers.splice(c,1)[0];
+		var l = controllers.length - 1;
+		for (var c = l; c >= 0; c--) {
+			var ctrl = controllers[c];
+			if(ctrl.getName() === name && typeof ctrl != 'KeyboardController') {
 				ctrl.dispose();
+				controllers.splice(c,1);
 				ctrl = null;
 			}
 		}

@@ -211,12 +211,12 @@ var View = (function() {
 	};
 
 	that.wait = function () {
-		$('#waitContainer').show();
+		//$('#waitContainer').show();
 	};
 
 	that.showControls = function () {
-		$('#waitContainer').hide();
-		$('#controllerContainer').show();
+		//$('#waitContainer').hide();
+		//$('#controllerContainer').show();
 	};
 
 	return that;
@@ -235,7 +235,7 @@ var Login = (function() {
 			event.preventDefault();
 
 			$('#formContainer').hide();
-			$('#waitContainer').show();
+			//$('#waitContainer').show();
 
 			cb(pin, name);
  			return false;
@@ -247,7 +247,7 @@ var Login = (function() {
 }());
 
 window.addEventListener('unload', eventWindowUnloaded, false);
-window.addEventListener('pagehide', eventWindowUnloaded, false);
+//window.addEventListener('pagehide', eventWindowUnloaded, false);
 window.addEventListener('load', eventWindowLoaded, false);
 
 function eventWindowUnloaded() {
@@ -257,8 +257,8 @@ function eventWindowUnloaded() {
 function eventWindowLoaded() {
 
 	//$('#formContainer').remove();
-	$('#waitContainer').hide();
-	$('#controllerContainer').hide();
+	//$('#waitContainer').hide();
+	//$('#controllerContainer').hide();
 	
 
 	Login.handleForm(function(pin, name) {

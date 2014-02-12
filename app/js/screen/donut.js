@@ -25,7 +25,6 @@ var Donut = function(spec) {
 	var maxThrust = 0.03;
 	var maxVelocity = 5; // not sure how to apply this in the physics lib
 	var rotVelocity = 2 * Math.PI / 180;
-	//var bulletReady = 1;
 	var maxStamina = 8;
 	var fireDelay = 15; // @TODO: should be dependent on actual framerate
 
@@ -76,7 +75,7 @@ var Donut = function(spec) {
 	};
 
 	that.respawn(spec.x, spec.y, spec.color);
-	asset = Assets.donut({ color : spec.color, radius : radius });
+	asset = Assets.donut({ color : spec.color, radius : radius, 'maxStamina' : maxStamina });
 
 	that.update = function() {
 		
@@ -170,6 +169,10 @@ var Donut = function(spec) {
 
 	that.getStamina = function () {
 		return stamina;
+	};
+
+	that.getMaxStamina = function () {
+		return maxStamina;
 	};
 
 	that.addScore = function (value) {

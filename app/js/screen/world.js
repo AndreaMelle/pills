@@ -104,7 +104,7 @@ var World = (function () {
 		}
 
 		if (donuts.length <= 0) {
-			Assets.welcome.draw(ctx);
+			Assets.welcome.drawSocket(ctx);
 		}
 
 		Assets.leaderboard.draw(ctx, donuts);
@@ -132,8 +132,11 @@ var World = (function () {
 	my.destroyPlayer = function (player) {
 		var idx = donuts.indexOf(player);
 		if(idx > -1) {
-			var d = donuts.splice(idx,1)[0].dispose();
-			d.controller.unbind(d);
+			var d = donuts.splice(idx,1)[0];
+			var c = d.controller;
+			d.dispose();
+			c.unbind(d);
+			c = null;
 			d = null;
 		}
 	};

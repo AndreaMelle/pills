@@ -19,7 +19,14 @@ var Assets = (function() {
 		x : 0,
 		y : 0,
 		width : GC.width(),
-		height : GC.height()
+		height : GC.height(),
+		fontSize : 32,
+		font : "px FreePixel",
+		pin : "pills"
+	};
+
+	bckg.setPin = function (val) {
+		bckg.pin = val;
 	};
 
 	bckg.draw = function (ctx) {
@@ -29,6 +36,11 @@ var Assets = (function() {
 		ctx.fillStyle = "#002935";
 		ctx.fillRect(bckg.x, bckg.y, bckg.width, bckg.height);
 		ctx.strokeRect(bckg.x, bckg.y, bckg.width, bckg.height);
+
+		ctx.font = bckg.fontSize + bckg.font;
+		ctx.fillStyle = colorLight;
+		ctx.fillText(bckg.pin, 12, bckg.y + bckg.height - 12);
+
 	};
 
 	var wlc = {
@@ -38,6 +50,39 @@ var Assets = (function() {
 		height : 318,
 		fontSize : 16,
 		font : "px FreePixel",
+	};
+
+	wlc.drawSocket = function (ctx) {
+		ctx.lineWidth = 2;
+		ctx.strokeStyle = "#BFF4F5";
+		ctx.fillStyle = "#002935";
+		ctx.fillRect(wlc.x, wlc.y, wlc.width, wlc.height);
+		ctx.strokeRect(wlc.x, wlc.y, wlc.width, wlc.height);
+
+		ctx.font = wlc.fontSize + wlc.font;
+		ctx.fillStyle = colorLight;
+		ctx.setTransform(1,0,0,1,0,0);
+		ctx.translate(wlc.x + 30,wlc.y + 30);
+		var ty = 0;
+		ctx.fillText("Welcome!", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("1. connect to pills.com on you device", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("2. type in the code you see down left", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("3. pick up pills to fire bullets", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("4. shoot the other players", 0, ty);
+		ty += wlc.fontSize + 20;
+
+		ctx.fillText("Keyboard controls:", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		Player '1': 'w', 'a', 'd', 's'", 0, ty);
+		ty += wlc.fontSize + 10;
+		ctx.fillText("		Player '2': 'up', 'left', 'right', 'down'", 0, ty);
+		ty += wlc.fontSize + 10;
+
+		ctx.setTransform(1,0,0,1,0,0);
 	};
 
 	wlc.draw = function (ctx) {
@@ -89,7 +134,7 @@ var Assets = (function() {
 		// @TODO: leading zeros
 		ctx.font = leaderboard.fontSize + leaderboard.font;
 		ctx.fillStyle = leaderboard.color;
-		var tx = 20;
+		var tx =  GC.width() - ctx.measureText("leaderboard:").width - 20;
 		var ty = 20;
 		ctx.fillText("leaderboard:", tx, ty);
 		ty += leaderboard.fontSize + 10;
@@ -112,47 +157,92 @@ var Assets = (function() {
 	var donut = function (spec) {
 
 		var radius = spec.radius;
+		var maxStamina = spec.maxStamina || 0;
 		var lineWidth = 2;
 		var font = "10px Arial";
 		var color = spec.color || "#000000";
 		var colorOut = "#BFF4F5";
 		var colorIn = "#002935";
 
-		var buffer = document.createElement('canvas');
-		buffer.width = 3 * radius;
-		buffer.height = 3 * radius;
-		var bufferCtx = buffer.getContext("2d");
+		var createMainBuffer = function () {
+			var buffer = document.createElement('canvas');
+			buffer.width = 3 * radius;
+			buffer.height = 3 * radius;
+			var bufferCtx = buffer.getContext("2d");
 
-		bufferCtx.setTransform(1,0,0,1,0,0);
-		bufferCtx.translate(buffer.width/2, buffer.height/2);
-		
-		bufferCtx.drawSvg(tri, 23, -15/2.0, 15, 15);
+			bufferCtx.setTransform(1,0,0,1,0,0);
+			bufferCtx.translate(buffer.width/2, buffer.height/2);
+			
+			bufferCtx.drawSvg(tri, 23, -15/2.0, 15, 15);
 
-		bufferCtx.lineWidth = lineWidth;
-		bufferCtx.strokeStyle = colorOut;
-		bufferCtx.fillStyle = colorIn;
-		bufferCtx.beginPath();
-		bufferCtx.arc(0, 0, radius, 0, 2 * Math.PI);
-		bufferCtx.stroke();
-		bufferCtx.fill();
-		
-		bufferCtx.fillStyle = color;
-		bufferCtx.beginPath();
-		bufferCtx.arc(0, 0, radius - 6, 0, 2 * Math.PI);
-		bufferCtx.fill();
+			bufferCtx.lineWidth = lineWidth;
+			bufferCtx.strokeStyle = colorOut;
+			bufferCtx.fillStyle = colorIn;
+			bufferCtx.beginPath();
+			bufferCtx.arc(0, 0, radius, 0, 2 * Math.PI);
+			bufferCtx.stroke();
+			bufferCtx.fill();
 
-		bufferCtx.fillStyle = colorIn;
-		bufferCtx.beginPath();
-		bufferCtx.arc(0, 0, radius - 17, 0, 2 * Math.PI);
-		bufferCtx.fill();
+			return buffer;
+		};
 
-		bufferCtx.fillStyle = colorOut;
-		bufferCtx.imageSmoothingEnabled = false;
-		bufferCtx.fillRect(-1, -3, 2, 6);
-		bufferCtx.fillRect(-3, -1, 6, 2);
-		bufferCtx.imageSmoothingEnabled = true;
-		bufferCtx.setTransform(1,0,0,1,0,0);
-		
+		var createStaminaBuffers = function () {
+
+			var buffers = [];
+			var l = maxStamina + 1;
+			var angle = Math.PI / 4;//Math.PI - (l - 2) * (Math.PI / l);
+			var r = radius - 6;
+
+			for(var i = 0; i < l; i++) {
+
+				var buffer = document.createElement('canvas');
+				buffer.width = 2 * r;
+				buffer.height = 2 * r;
+				var bufferCtx = buffer.getContext("2d");
+
+				bufferCtx.setTransform(1,0,0,1,0,0);
+				bufferCtx.translate(buffer.width/2, buffer.height/2);
+				
+				bufferCtx.fillStyle = color;
+				var startX = r;
+				var startY = 0;
+				bufferCtx.beginPath();
+				for(var j = 0; j < i; j++) {
+					var a = r * Math.cos((j+1) * (angle));
+					var b = r * Math.sin((j+1) * (angle));
+					bufferCtx.moveTo(0,0);
+					bufferCtx.lineTo(startX,startY);
+					bufferCtx.lineTo(a,b);
+					bufferCtx.lineTo(0,0);
+					//bufferCtx.fill();
+					//bufferCtx.beginPath();
+					bufferCtx.arc(0, 0, radius - 6, (j) * angle, (j + 1) * angle);				
+					startX = a;
+					startY = b;
+				}
+
+				bufferCtx.fill();
+
+				bufferCtx.fillStyle = colorIn;
+				bufferCtx.beginPath();
+				bufferCtx.arc(0, 0, radius - 17, 0, 2 * Math.PI);
+				bufferCtx.fill();
+				
+
+				bufferCtx.fillStyle = colorOut;
+				bufferCtx.imageSmoothingEnabled = false;
+				bufferCtx.fillRect(-1, -3, 2, 6);
+				bufferCtx.fillRect(-3, -1, 6, 2);
+				bufferCtx.imageSmoothingEnabled = true;
+				bufferCtx.setTransform(1,0,0,1,0,0);
+				buffers.push(buffer);
+			}
+
+			return buffers;
+		};
+
+		var mainBuffer = createMainBuffer ();
+		var staminaBuffers = createStaminaBuffers();
 
 		var draw = function (ctx, px, py, dx, dy, rot, stamina) {
 			//if (DEBUG) { drawPhysicsDebug(ctx); }
@@ -160,8 +250,13 @@ var Assets = (function() {
 			ctx.setTransform(1,0,0,1,0,0);
 			ctx.translate(px, py);
 			ctx.rotate(rot);
-			ctx.translate(-buffer.width/2, -buffer.height/2);
-			ctx.drawImage(buffer, 0, 0);
+			ctx.translate(-mainBuffer.width/2, -mainBuffer.height/2);
+			ctx.drawImage(mainBuffer, 0, 0);
+			ctx.setTransform(1,0,0,1,0,0);
+
+			ctx.translate(px,py);
+			ctx.translate(-staminaBuffers[stamina].width/2, -staminaBuffers[stamina].height/2);
+			ctx.drawImage(staminaBuffers[stamina],0,0);
 			ctx.setTransform(1,0,0,1,0,0);
 		};
 

@@ -16,7 +16,7 @@ var WebSocketManager = (function () {
 		console.log('Pin: ' + data);
 		pin = data;
 		// ready to render - call a callback or something
-
+		Assets.background.setPin(pin);
 		//socket = io.connect('http://localhost:' + socketPort + socketEndPoint + '/' + pin);
 
 		socket.on(mp.NEWPLAYER, function(data) {
