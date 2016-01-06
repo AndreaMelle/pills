@@ -1,25 +1,25 @@
 var GC = (function () {
-	
+
 	var my = {};
 
 	var _canvas;
 	var context = null;
 	var isInit = false;
-	var width = 1200;
-	var height = 1200 * 9 / 16;
-	
+	var width = window.innerWidth - 20;
+	var height = width * 9 / 16;
+
 	var lastFrameCount = 0;
 	var dateTemp = new Date();
 	var frameLast = dateTemp.getTime();
 	var frameCtr = 0;
-	
+
 	var frameRate = 40;
 	var intervalTime = 1000 / frameRate;
-	
+
 	my.countFrames = function () {
 		var dateTemp = new Date();
 		frameCtr++;
-		
+
 		if (dateTemp.getTime() >= frameLast + 1000) {
 			//ConsoleLog.log("frame event");
 			lastFrameCount = frameCtr;
@@ -28,19 +28,19 @@ var GC = (function () {
 		}
 		return lastFrameCount;
 	};
-	
+
 	my.left = function () {
 		return 0;
 	};
-	
+
 	my.right = function () {
 		return width;
 	};
-	
+
 	my.top = function () {
 		return 0;
 	};
-	
+
 	my.bottom = function () {
 		return height;
 	};
@@ -56,7 +56,7 @@ var GC = (function () {
 	my.intervalTime = function () {
 		return intervalTime;
 	};
-	
+
 	my.init = function () {
 		_canvas = document.getElementById('canvas');
 		if (!_canvas || !_canvas.getContext) {
@@ -66,20 +66,20 @@ var GC = (function () {
 
 		_canvas.width = width;
 		_canvas.height = height;
-	
+
 		context = _canvas.getContext("2d");
-	
+
 		if (!context) {
 			console.log('No context found.');
 			return null;
 		}
-		
+
 		console.log('Canvas context found.');
-		
+
 		isInit = true;
 		return context;
 	};
-	
+
 	my.get = function () {
 		if (isInit) {
 			return context;
@@ -87,7 +87,7 @@ var GC = (function () {
 			return null;
 		}
 	};
-	
+
 	return my;
 
 }());
