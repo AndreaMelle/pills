@@ -1,10 +1,9 @@
 # Pills
-A multi-device websocket experiment.<br>
+A multi-device websocket experiment.
 
 ![pills info](pills_info.jpg)
 
-Pills is a 2d multiplayer game which runs in your browser.<br>
-Each player controls its character with his smartphone.
+Pills is a 2D multiplayer game which runs in your browser. Each player controls its character with his smartphone.
 
 ### How to setup
 
@@ -21,16 +20,13 @@ Each player controls its character with his smartphone.
 
 ### Warning
 
-This is a Chrome experiment.
-This experiment has been tested with a laptop running the game on Google Chrome and an iPhone4S runnign the controller on Google Chrome for iOS.
+This is a Chrome experiment.<br>
+It has been tested with a laptop running the game on Google Chrome and an iPhone4S runnign the controller on Google Chrome for iOS.
 
 ### Under the hood
 
-The game relies on a [Node.js](http://nodejs.org/) server running [Express](http://expressjs.com/) to serve static content and [Socket.io](http://socket.io/) to manage the communication between devices.
-
-The graphics has been developed using the [HTML5 Canvas API](http://diveintohtml5.info/canvas.html), with the help of an extension to the physics module from [Toxiclibs.js](http://haptic-data.com/toxiclibsjs/) I developed to handle behaviors affecting separate groups of particles.
-
+The game relies on a [Node.js](http://nodejs.org/) server running [Express](http://expressjs.com/) to serve static content and [Socket.io](http://socket.io/) to manage the communication between devices.<br>
+The graphics has been developed using the [HTML5 Canvas API](http://diveintohtml5.info/canvas.html), with the help of an extension to the physics module from [Toxiclibs.js](http://haptic-data.com/toxiclibsjs/) I developed to handle behaviors affecting separate groups of particles.<br>
 The responsive mobile app makes use of [JQuery](http://jquery.com/) and [Bootstrap](http://getbootstrap.com/).
 
 ![pills](pills.jpg)
-
